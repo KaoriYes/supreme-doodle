@@ -1,0 +1,370 @@
+@font-face {
+    font-family: Mona sans;
+    src: url(../fonts/MonaSans-Regular.ttf);
+    font-weight: 400;
+    }
+
+@font-face {
+    font-family: Mona sans;
+    src: url(../fonts/MonaSans-Light.ttf);
+    font-weight: 300;
+    }
+
+@font-face {
+    font-family: Mona sans;
+    src: url(../fonts/MonaSans-ExtraLight.ttf);
+    font-weight: 200;
+    }
+
+@font-face {
+    font-family: Mona sans;
+    src: url(../fonts/MonaSans-Medium.ttf);
+    font-weight: 500;
+    }
+
+
+@font-face {
+    font-family: Mona sans;
+    src: url(../fonts/MonaSans-Bold.ttf);
+    font-weight: 700;
+    }
+
+@font-face {
+    font-family: Mona sans;
+    src: url(../fonts/MonaSans-SemiBold.ttf);
+    font-weight: 600;
+    }
+
+@font-face {
+    font-family: Otypical Headline;
+    src: url("../fonts/Otypical_Headline.ttf");
+    font-weight: 600;
+    }
+
+
+:root {
+    /* font-size: min(calc(1em + 1vw), 4em); */
+    --c-creme: #f0ece3;
+    --p-purple: #131444;
+    --primary-color: var(--c-creme);
+    --secondary-color: var(--p-purple);
+    --tertiary-color: #00000;
+    --CTA-color: #00cfff;
+    --primary-font: Mona sans, sans serif;
+    --secondary-font: Otypical Headline, sans serif;
+    /* --dist-det-week: 2.5em; */
+    --shadow: 4px 4px 10px #1314443f;
+    --background-dots:radial-gradient(rgba(255, 255, 255, 1) 9%, transparent 9%);
+    }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
+body {
+    font-family: var(--primary-font);
+    font-size: 1em;
+    font-weight: 300;
+    color: var(--secondary-color);
+    
+    background-color: var(--primary-color);
+    
+    }
+
+h1 {
+    
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    }
+
+h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    }
+
+h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+    }
+
+
+a {
+    position: relative;
+    text-decoration: none;
+    color: var(--secondary-color);
+    }
+
+a:before {
+    position: absolute;
+    bottom: -.125em;
+    width: 100%;
+    height: 1px;
+    content: "";
+    transition: transform 0.3s ease-in;
+    transform: scale3d(0, 2, 2);
+    transform-origin: 100%;
+    background-color: var(--secondary-color);
+    }
+
+a:hover:before {
+    transform: scale3d(1, 2, 5);
+    transform-origin: 0;
+    animation-fill-mode: forwards;
+    }
+
+a:after {
+    position: absolute;
+    bottom: -.125em;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    content: "";
+    /* transition: transform 0.3s ease-in; */
+    /* transform: scale3d(0, 2, 2); */
+    transform-origin: 100%;
+    background-color: var(--secondary-color);
+    }
+
+/* header */
+header {
+    display: flex;
+    width: 100dvw;
+    height: 100dvh;
+    padding-top: 3em;
+    gap: 4em;
+    position: relative;
+    }
+header:before{
+    content: "";
+    background-image: var(--background-dots);
+    background-size: 5vmin 5vmin;
+    background-repeat: repeat;
+    background-attachment: fixed;
+    /* background-color: var(--primary-color); */
+    height: 200vh;
+    left: 0px;
+    position: absolute;
+    top: 0px;
+    width: 100vw;
+    z-index: -2;
+    background-position: 0% 0%;
+    }
+
+header section:nth-of-type(1) {
+    margin: 0 0 0 5em;
+    }
+
+header section:nth-of-type(1) h1 {
+    margin-bottom: 0;
+    }
+
+header section:nth-of-type(1) p {
+    margin-top: .25em;
+    }
+
+header ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    gap: .3em;
+    }
+
+
+/* main */
+
+main{
+    min-height: 80vh;
+    margin: 5vh 5vw;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    background-color:  #f0ece33f;
+    }
+main h3{
+    font-size: 1rem;
+    width: 15vw;
+    font-weight: bold;
+    }
+
+/* Article In het kort */
+main article.kort{
+    display: flex;
+    flex-direction: column;
+    gap: .75em;
+    }
+main article.kort h2{
+    font-size: .9em;
+    }
+main article.kort p{
+    font-size: 2em;
+    font-weight: 400;
+    font-family: var(--secondary-font);
+    }
+main article.kort a{
+    margin-left: auto;
+    }
+
+main article.kort a:hover:before{
+    background-color: var(--CTA-color);
+    }
+main article.kort a:before{
+    background-color: var(--CTA-color);
+    }
+main article.kort a:after{
+    background-color: var(--CTA-color)
+    }
+
+
+/* Section op dit moment */
+
+main section{
+    display: flex;
+    flex-direction: column;
+    /* gap: 2em; */
+    }
+
+main section ul{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .3em;
+    }
+
+
+main section.location p{
+    width: 10vw;
+    }
+
+main section.socials ul li{
+    width: 10vw;
+    display: flex;
+    }
+main section.socials ul li span{
+    margin-left: auto;
+    }
+
+
+/* footer */
+
+/* classes */
+
+path {
+    fill: transparent;
+    }
+
+/* Hiding class, making content visible only to screen readers but not visually */
+/* "sr" meaning "screen-reader" */
+
+.sr-only:not(:focus):not(:active) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    }
+
+
+/* keyframes */
+@keyframes rotating {
+    from {
+        transform: rotate(0deg);
+        }
+    
+    to {
+        transform: rotate(360deg);
+        }
+    }
+@keyframes tonearmRotate{
+    from{
+        transform: rotate(0deg);
+        }
+
+    to{
+        transform: rotate(39deg);
+        }
+    
+    }
+
+@media (prefers-reduced-motion: no-preference) {
+    }
+
+
+@media (max-height: 780px) and (min-width: 950px ){
+    /* Rpm choice */
+    
+    }
+
+@media (min-height: 800px) and (min-width: 1335px) {
+    body{
+        /* background-color: yellow !important; */
+        }
+    
+    header div.toneArm{
+        rotate: 14deg;
+        }
+    }
+
+
+@media (max-width: 700px){
+    
+    header nav {
+        display: none;
+        }
+    
+    
+    header section:nth-of-type(1){
+        margin: 0 0 0 1em;
+        }
+    
+    header section:nth-of-type(2){
+        top: 1em;
+        right: 5vw;
+        left: auto;
+        }
+    header section:nth-of-type(2) > * {
+        display: none;
+        }
+    
+    header section:nth-of-type(2) img{
+        display: initial;
+        }
+    
+    header section.mobile-only{
+        display: initial;
+        position: absolute;
+        left: 5vw;
+        bottom: 40vh;
+        }
+    
+    
+    header div.toneArm {
+        display: none;
+        }
+    header fieldset div {
+        display: none;
+        }
+    
+        
+    header section:nth-of-type(2) h2.no-reduce{
+        font-size: 1em;
+        }
+    header > label:first-of-type{
+        display: none;
+        }
+    header fieldset{
+        display: none;
+        }
+    
+    
+    main section{
+        gap: 3em;
+        }
+    
+    }

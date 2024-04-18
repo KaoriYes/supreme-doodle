@@ -1,0 +1,35 @@
+<%- include('./head') %>
+
+<main>
+    <h2><%= subtitle %></h2>
+	<form action="/account/accountRegister" method="POST" id="userRegister">
+            <section class="questionStart">
+                <h2>Wat is je naam?</h2>
+                <input type="text" id="name" name="name">
+				<!-- <button class="forwardStart"><img src="../public/img/forward_arrow" alt="proceed"></button> -->
+            </section>
+            <section class="questionSecond">
+                <h2>Wat is je achternaam?</h2>
+                <input type="text" id="surname" name="surname">
+				<!-- <button class="forwardSecond"><img src="../public/img/forward_arrow" alt="proceed"></button> -->
+            </section>
+            <section class="questionFourth">
+                <h2>Wat is je e-mailadres?</h2>
+                <input type="email" id="email" name="email">
+				<!-- <button class="forwardFourth"><img src="../public/img/forward_arrow" alt="proceed"></button> -->
+            </section>
+            <section class="questionFifth">
+                <h2>Wat is je wachtwoord</h2>
+                <div>
+                    <input type="password" id="password" name="password">
+                    <input type="password" id="confirm_password" name="confirm_password"
+						   placeholder="Herhaal Wachtwoord">
+                </div>
+            </section>
+           <input type="submit" value="Register">
+        </form>
+</main>
+
+<script src="/scripts/index.js"></script>
+</body>
+</html>

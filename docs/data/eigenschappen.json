@@ -1,0 +1,19 @@
+{
+    "eend": {
+        "naam": "Quinten Kok",
+        "leeftijd": "140",
+        "eendenNaam": "meneer de Uil",
+        "karakter": "ADHDeend",
+        "woonVijver": "De Poel",
+        "favorieteBrood": "Hollandsgrof",
+        "kwikKwekKwak": "Kwek",
+        "favorieteDoelwit":
+            {
+                "doelwit1": "Redouan Kwakkie",
+                "doelwit2": "Mark Rutte",
+                "doelwit3": "Tristan"
+            }
+
+    }
+}
+

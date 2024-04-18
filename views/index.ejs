@@ -1,0 +1,33 @@
+<%- include('./head') %>
+
+<main>
+	<h1>Helo</h1>
+
+    <% if(emailUser){ %>
+        <a href="/account/logout">logout</a>
+    <section id="chat-container">
+        <h2>chats</h2>
+
+    </section>
+    <h2><%= emailUser.name %></h2>
+    <section id="chat-form">
+        <h2>chat</h2>
+        <form action="/send-notification" method="get">
+            <input type="text" id="chat" name="message" placeholder="message">
+            <input type="submit" value="send">
+        </form>
+    </section>
+
+    <% } else{ %>
+        <a href="/registerUser">create an account</a> or login
+        <form action="/account/login" method="POST">
+                <input type="email" id="email" name="email" placeholder="Email">
+                <input type="password" id="password" name="password" placeholder="Wachtwoord">
+                <input type="submit" value="login">
+            </form>
+    <% } %>
+</main>
+
+<script src="/scripts/index.js"></script>
+</body>
+</html>

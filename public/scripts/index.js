@@ -106,46 +106,71 @@ document.getElementById('chat-form').addEventListener('submit', function(event) 
             }
             return response.json();
         })
-        .then(data => {
-            if (data) {
-                renderMessage(data);
-
-                const registerServiceWorker = async () => {
-                    const swRegistration = await navigator.serviceWorker.register('/serviceWorker.js'); //notice the file name
-                    return swRegistration;
-                }
-                const showLocalNotification = (title, body, swRegistration) => {
-                    const options = {
-                        body,
-                        // here you can add more properties like icon, image, vibrate, etc.
-                    };
-                    swRegistration.showNotification(title, options);
-                }
-
-                const main = async () => {
-                    check();
-                    const swRegistration = await registerServiceWorker();
-                    const permission =  await requestNotificationPermission();
-                    showLocalNotification(`${data.id}`, `${data.Chat}`, swRegistration);
-                }
-                main(data);
-
-
-            }
-        })
         .catch(error => {
             console.error('There was a problem with your fetch operation:', error);
         });
 });
 
 
+
+const eventSource = new EventSource('/events');
+
+eventSource.onmessage = (event) => {
+    console.log(event.data)
+    const eventData = JSON.parse(event.data); // Parse the event data as JSON
+    console.log(eventData);
+    if (eventData) {
+        renderMessage(eventData);
+
+        // Service Worker registration and notification functions
+        const registerServiceWorker = async () => {
+            if ('serviceWorker' in navigator) {
+                const swRegistration = await navigator.serviceWorker.register('/serviceWorker.js'); // Register service worker
+                return swRegistration;
+            } else {
+                throw new Error('Service Worker not supported');
+            }
+        };
+
+        const showLocalNotification = (title, body, swRegistration) => {
+            const options = {
+                body,
+                // You can add more properties like icon, image, vibrate, etc. to customize the notification
+            };
+            swRegistration.showNotification(title, options); // Show local notification
+        };
+
+        // Main function to handle service worker registration and notification
+        const main = async () => {
+            try {
+                const swRegistration = await registerServiceWorker();
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    showLocalNotification(eventData.id, eventData.Chat, swRegistration); // Show local notification if permission granted
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        main(); // Call the main function
+    }
+};
+
+eventSource.onerror = (error) => {
+    console.error('EventSource failed:', error);
+    eventSource.close();
+};
+
+// Function to render message in the chat container
 const renderMessage = (message) => {
+    const chatContainer = document.getElementById('chatContainer');
     const messageElement = document.createElement('div');
     messageElement.innerHTML = `
-                <p>name: ${message.id}</p>
-                <p>${message.Chat}</p>
-                <hr>
-            `;
+        <p>Name: ${message.id}</p>
+        <p>${message.Chat}</p>
+        <hr>
+    `;
     chatContainer.appendChild(messageElement);
 };
 

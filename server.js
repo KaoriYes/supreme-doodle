@@ -35,7 +35,6 @@ app.use("*/scripts", express.static(path.join(__dirname, "public/scripts")));
 //router
 // Import route files
 const loginRegisterRoute = require('./routes/loginRegister');
-const chatRoomRoute = require('./routes/chatRoom');
 
 
 //database verbinden
@@ -93,10 +92,7 @@ function eventsHandler(request, response, next) {
     response.writeHead(200, headers);
 
 
-    const data = `data: ${JSON.stringify(chats)}\n\n`;
 
-    response.write('id: 1\n')
-    response.write('data: text chat\n\n')
     const clientId = Date.now();
 
     const newClient = {
@@ -191,7 +187,7 @@ es.addEventListener('error', listener);
 
 
 app.use('/account', loginRegisterRoute);
-app.use('/chat', chatRoomRoute);
+
 
 http.listen(port, () => {
     console.log('Running on Port: ' + port);

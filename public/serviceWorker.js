@@ -11,16 +11,33 @@ const urlB64ToUint8Array = base64String => {
     return outputArray
 }
 // saveSubscription saves the subscription to the backend
-const saveSubscription = async subscription => {
-    const SERVER_URL = 'http://localhost:1337/save-subscription'
-    const response = await fetch(SERVER_URL, {
-        method: 'post',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(subscription),
-    })
-    return response.json()
+// const saveSubscription = async subscription => {
+//     const SERVER_URL = 'http://localhost:1337/save-subscription'
+//     const response = await fetch(SERVER_URL, {
+//         method: 'post',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(subscription),
+//     })
+//     return response.json()
+// }
+function subscribeUserToPush() {
+    return getSWRegistration()
+        .then(function(registration) {
+            const subscribeOptions = {
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(
+                    'BEcCxLSXfWWI0jsJ28IT9kzovSlXVIcQAHyq6PolklMpvZMwdC8AGrg3cDTPDSbrjV23kQun2uizUT-K0m7Fpbo'
+                )
+            };
+
+            return registration.pushManager.subscribe(subscribeOptions);
+        })
+        .then(function(pushSubscription) {
+            console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+            return pushSubscription;
+        });
 }
 self.addEventListener('activate', async () => {
     // This will be called only once when the service worker is activated.
@@ -30,7 +47,7 @@ self.addEventListener('activate', async () => {
         )
         const options = { applicationServerKey, userVisibleOnly: true }
         const subscription = await self.registration.pushManager.subscribe(options)
-        const response = await saveSubscription(subscription)
+        const response = await subscribeUserToPush(subscription)
         console.log(response)
     } catch (err) {
         console.log('Error', err)

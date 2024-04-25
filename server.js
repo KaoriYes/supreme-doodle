@@ -13,6 +13,8 @@ var EventSource = require('eventsource')
 // const mongoose = require('mongoose');
 const webpush = require('web-push') //requiring the web-push module
 
+
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded());
@@ -116,50 +118,48 @@ app.prototype.end = function (data) {
     this.response.end();
 };
 
-//function to send the notification to the subscribed device
-const sendNotification = (subscription, dataToSend='') => {
-    webpush.sendNotification(subscription, dataToSend)
-}
 
-const dummyDb = { subscription: null } //dummy in memory store
-const saveToDatabase = async subscription => {
-    // Since this is a demo app, I am going to save this in a dummy in memory store. Do not do this in your apps.
-    // Here you should be writing your db logic to save it.
-    dummyDb.subscription = subscription
-}
-// The new /save-subscription endpoint
-app.post('/save-subscription', async (req, res) => {
-    const subscription = req.body
-    await saveToDatabase(subscription) //Method to save the subscription to Database
-    res.json({ message: 'success' })
-})
-
-const vapidKeys = {
-    publicKey: process.env.PUBLICKEY,
-    privateKey: process.env.PRIVATEKEY,
-}
 
 //
-
-
-webpush.setVapidDetails(
-    'mailto:quintenkok@me.com',
-    vapidKeys.publicKey,
-    vapidKeys.privateKey
-)
-
-//function to send the notification to the subscribed device
-const sendNotification = (subscription, dataToSend) => {
-    webpush.sendNotification(subscription, dataToSend)
-}
-//route to test send notification
-app.get('/send-notification', (req, res) => {
-    const subscription = dummyDb.subscription //get subscription from your databse here.
-    const message = 'Hello World'
-    sendNotification(subscription, message)
-    res.json({ message: 'message sent' })
-})
-
+//
+// const dummyDb = { subscription: null } //dummy in memory store
+// const saveToDatabase = async subscription => {
+//     // Since this is a demo app, I am going to save this in a dummy in memory store. Do not do this in your apps.
+//     // Here you should be writing your db logic to save it.
+//     dummyDb.subscription = subscription
+// }
+// // The new /save-subscription endpoint
+// app.post('/save-subscription', async (req, res) => {
+//     const subscription = req.body
+//     await saveToDatabase(subscription) //Method to save the subscription to Database
+//     res.json({ message: 'success' })
+// })
+//
+// const vapidKeys = {
+//     publicKey: process.env.PUBLICKEY,
+//     privateKey: process.env.PRIVATEKEY,
+// }
+//
+//
+//
+// webpush.setVapidDetails(
+//     'mailto:quintenkok@me.com', //for testing, idk if this works
+//     vapidKeys.publicKey,
+//     vapidKeys.privateKey
+// )
+//
+// //function to send the notification to the subscribed device
+// const sendNotification = (subscription, dataToSend) => {
+//     webpush.sendNotification(subscription, dataToSend)
+// }
+// //route to test send notification
+// app.get('/send-notification', (req, res) => {
+//     const subscription = dummyDb.subscription //get subscription from your databse here.
+//     const message = 'Hello World'
+//     sendNotification(subscription, message)
+//     res.json({ message: 'message sent' })
+// })
+//
 
 app.get('/events', eventsHandler);
 function sendEventsToAll(newChat) {
@@ -192,7 +192,6 @@ es.addEventListener('error', listener);
 
 app.use('/account', loginRegisterRoute);
 app.use('/chat', chatRoomRoute);
-
 
 http.listen(port, () => {
     console.log('Running on Port: ' + port);

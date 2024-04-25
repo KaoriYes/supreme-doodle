@@ -3,13 +3,14 @@
 <main>
 	<h1>Helo</h1>
 
+
     <% if(emailUser){ %>
+        <h2><%= emailUser.name %></h2>
         <a href="/account/logout">logout</a>
     <section id="chat-container">
         <h2>chats</h2>
 
     </section>
-    <h2><%= emailUser.name %></h2>
     <section id="chat-form">
         <h2>chat</h2>
         <form action="/send-notification" method="get">

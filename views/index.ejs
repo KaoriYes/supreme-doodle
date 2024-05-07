@@ -1,20 +1,42 @@
 <%- include('./head') %>
-
+<header>
+<h1>Chat app</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/account">Account</a></li>
+        </ul>
+        <section id="account">
+            <h2>Account</h2>
+            <% if(emailUser){ %>
+                <h3><%= emailUser.name %><%= emailUser.surname %></h3>
+                <a href="/account/logout">logout</a>
+            <% } else{ %>
+<!--                <a href="/account">create an account</a> or login-->
+<!--                <p>or log in =></p>-->
+                <p>Log in!</p>
+                <form action="/account/login" method="POST">
+                    <input type="email" id="email" name="email" placeholder="Email">
+                    <input type="password" id="password" name="password" placeholder="Wachtwoord">
+                    <input type="submit" value="login">
+                </form>
+            <% } %>
+        </section>
+    </nav>
+</header>
 <main>
-	<h1>Helo</h1>
-
-
+    <div>
+	<h2>WebbAppQ</h2>
     <% if(emailUser){ %>
-        <h2><%= emailUser.name %></h2>
-        <a href="/account/logout">logout</a>
+        <h3><%= emailUser.name %></h3>
+    </div>
     <section id="chatContainer">
-        <h2>chats</h2>
+        <h3>chats</h3>
 
     </section>
     <section id="chat-form">
-        <h2>chat</h2>
-        <form>
-            <input type="text" id="chat" name="message" placeholder="message">
+        <form autocomplete="off">
+            <input type="text" id="chat" name="message" placeholder="Type a message">
             <input type="submit" value="send">
         </form>
     </section>
@@ -25,7 +47,7 @@
                 <input type="email" id="email" name="email" placeholder="Email">
                 <input type="password" id="password" name="password" placeholder="Wachtwoord">
                 <input type="submit" value="login">
-            </form>
+        </form>
     <% } %>
 </main>
 

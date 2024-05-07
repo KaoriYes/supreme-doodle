@@ -7,7 +7,6 @@ const bcrypt = require("bcryptjs");
 const saltRounds = 12;
 const session = require("express-session");
 const MongoDBSession = require("express-mongodb-session")(session);
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser')
 
 
@@ -175,13 +174,10 @@ router.get("/", checkLogin, async (req, res) => {
     const user = await collectionUsers.findOne({
         email: emailUser,
     });
-    const user2 = await collectionUsers.findOne({
-        email: "incoming",
-    });
+    console.log(user)
     res.render("account.ejs", {
         title: "Account",
         user,
-        user2,
     });
 });
 

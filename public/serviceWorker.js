@@ -1,63 +1,64 @@
-// urlB64ToUint8Array is a magic function that will encode the base64 public key
-// to Array buffer which is needed by the subscription option
-const urlB64ToUint8Array = base64String => {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
-    const rawData = atob(base64)
-    const outputArray = new Uint8Array(rawData.length)
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i)
-    }
-    return outputArray
-}
-// saveSubscription saves the subscription to the backend
-// const saveSubscription = async subscription => {
-//     const SERVER_URL = 'http://localhost:1337/save-subscription'
-//     const response = await fetch(SERVER_URL, {
-//         method: 'post',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(subscription),
-//     })
-//     return response.json()
-// }
-function subscribeUserToPush() {
-    return getSWRegistration()
-        .then(function(registration) {
-            const subscribeOptions = {
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(
-                    'BEcCxLSXfWWI0jsJ28IT9kzovSlXVIcQAHyq6PolklMpvZMwdC8AGrg3cDTPDSbrjV23kQun2uizUT-K0m7Fpbo'
-                )
-            };
+function handlePushEvent(event) {
+    return clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true // Include pages that are not controlled by this servicenodem worker
+    })
+        .then(clients => {
+            // Check if any clients are currently open
+            const isPageOpen = clients.some(client => client.visibilityState === 'visible');
 
-            return registration.pushManager.subscribe(subscribeOptions);
-        })
-        .then(function(pushSubscription) {
-            console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-            return pushSubscription;
+            if (!isPageOpen) {
+                // No clients are open, proceed to show the notification
+                return Promise.resolve()
+                    .then(() => {
+                        return event.data.json();
+                    })
+                    .then((data) => {
+                        const title = data.id;
+                        const options = {
+                            body: data.chat,
+                            icon: data.icon,
+                        };
+                        return registration.showNotification(title, options);
+                    })
+                    .catch((err) => {
+                        console.error("Push event caused an error: ", err);
+                        // TODO don't show a message (in production)
+                        const title = "Message Received";
+                        const options = {
+                            body: event.data.text(),
+                        };
+                        return registration.showNotification(title, options);
+                    });
+            } else {
+                // At least one client is open, do not show the notification
+                console.log('Page is open, skipping push notification.');
+                return Promise.resolve();
+            }
         });
 }
-self.addEventListener('activate', async () => {
-    // This will be called only once when the service worker is activated.
-    try {
-        const applicationServerKey = urlB64ToUint8Array(
-            'BJ5IxJBWdeqFDJTvrZ4wNRu7UY2XigDXjgiUBYEYVXDudxhEs0ReOJRBcBHsPYgZ5dyV8VjyqzbQKS8V7bUAglk'
-        )
-        const options = { applicationServerKey, userVisibleOnly: true }
-        const subscription = await self.registration.pushManager.subscribe(options)
-        const response = await subscribeUserToPush(subscription)
-        console.log(response)
-    } catch (err) {
-        console.log('Error', err)
-    }
+
+self.addEventListener("push", function (event) {
+    event.waitUntil(handlePushEvent(event));
+});
+self.addEventListener('notificationclick', function(event) {
+    let url = 'http://localhost:1337/#chat-form';
+    event.notification.close(); // Android needs explicit close.
+    event.waitUntil(
+        clients.matchAll({type: 'window'}).then( windowClients => {
+            // Check if there is already a window/tab open with the target URL
+            for (var i = 0; i < windowClients.length; i++) {
+                var client = windowClients[i];
+                // If so, just focus it.
+                if (client.url === url && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            // If not, then open the target URL in a new window/tab.
+            if (clients.openWindow) {
+                return clients.openWindow(url);
+            }
+        })
+    );
 });
 
-self.addEventListener('push', function(event) {
-    if (event.data) {
-        console.log('Push event!! ', event.data.text())
-    } else {
-        console.log('Push event but no data')
-    }
-})

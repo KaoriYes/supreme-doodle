@@ -6,13 +6,9 @@ const http = require('http').Server(app);
 const port = 1337;
 const session = require("express-session");
 const MongoDBSession = require("express-mongodb-session")(session);
-const compression = require("compression");
-const mongodb = require('mongodb');
 const cors = require('cors');
 var EventSource = require('eventsource')
-// const mongoose = require('mongoose');
 const webpush = require('web-push') //requiring the web-push module
-
 
 
 app.use(cors());
@@ -25,7 +21,7 @@ app.set('view engine', 'ejs');
 
 //files
 app.use(express.static("public"));
-var path = require("path");
+let path = require("path");
 app.use(express.static(path.join(__dirname, "public")));
 app.use("*/css", express.static("public/css"));
 app.use("*/img", express.static(path.join(__dirname, "public/img")));
@@ -39,43 +35,41 @@ const loginRegisterRoute = require('./routes/loginRegister');
 
 //database verbinden
 const {
-    MongoClient,
-    ServerApiVersion
+    MongoClient, ServerApiVersion
 } = require("mongodb");
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverApi: ServerApiVersion.v1,
+    useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1,
 });
 
+//
+const databaseUsers = client.db("webAppQ");
+const collectionUsers = databaseUsers.collection("colUsers");
+const collectionSubs = databaseUsers.collection("colSubs");
+const collectionSessions = databaseUsers.collection("colSessions");
 
 //session store
 const store = new MongoDBSession({
-    uri: uri,
-    collection: "colSessions",
-    databaseName: "webAppQ",
+    uri: uri, collection: "colSessions", databaseName: "webAppQ",
 });
 const secret = process.env.SECRET;
 const session1 = session({
-    secret: secret,
-    cookie: {
+    secret: secret, cookie: {
         maxAge: 2592000000,
-    },
-    resave: false,
-    saveUninitialized: false,
-    store: store,
+    }, resave: false, saveUninitialized: false, store: store,
 });
 app.use(session1);
 // const emailUser = session1();
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     const emailUser = req.session.user
-    res.render('index', {emailUser} );
+    // const user = await collectionUsers.findOne({
+    //     email: emailUser,
+    // }); This shit is giving me a headache!!
+    res.render('index', {emailUser});
 });
 
 app.get('/status', (request, response) => response.json({clients: clients.length}));
-
 
 
 let clients = [];
@@ -85,27 +79,18 @@ let chats = [];
 
 function eventsHandler(request, response, next) {
     const headers = {
-        'Content-Type': 'text/event-stream',
-        'Connection': 'keep-alive',
-        'Cache-Control': 'no-cache'
+        'Content-Type': 'text/event-stream', 'Connection': 'keep-alive', 'Cache-Control': 'no-cache'
     };
     response.writeHead(200, headers);
-
 
 
     const clientId = Date.now();
 
     const newClient = {
-        id: clientId,
-        response
+        id: clientId, response
     };
 
     clients.push(newClient);
-
-    request.on('close', () => {
-        console.log(`${clientId} Connection closed`);
-        clients = clients.filter(client => client.id !== clientId);
-    });
 }
 
 app.prototype.end = function (data) {
@@ -115,49 +100,120 @@ app.prototype.end = function (data) {
 };
 
 
+function saveToDatabase(subscription, userId) {
+    return new Promise((resolve, reject) => {
 
-//
-//
-// const dummyDb = { subscription: null } //dummy in memory store
-// const saveToDatabase = async subscription => {
-//     // Since this is a demo app, I am going to save this in a dummy in memory store. Do not do this in your apps.
-//     // Here you should be writing your db logic to save it.
-//     dummyDb.subscription = subscription
-// }
-// // The new /save-subscription endpoint
-// app.post('/save-subscription', async (req, res) => {
-//     const subscription = req.body
-//     await saveToDatabase(subscription) //Method to save the subscription to Database
-//     res.json({ message: 'success' })
-// })
-//
-// const vapidKeys = {
-//     publicKey: process.env.PUBLICKEY,
-//     privateKey: process.env.PRIVATEKEY,
-// }
-//
-//
-//
-// webpush.setVapidDetails(
-//     'mailto:quintenkok@me.com', //for testing, idk if this works
-//     vapidKeys.publicKey,
-//     vapidKeys.privateKey
-// )
-//
-// //function to send the notification to the subscribed device
-// const sendNotification = (subscription, dataToSend) => {
-//     webpush.sendNotification(subscription, dataToSend)
-// }
-// //route to test send notification
-// app.get('/send-notification', (req, res) => {
-//     const subscription = dummyDb.subscription //get subscription from your databse here.
-//     const message = 'Hello World'
-//     sendNotification(subscription, message)
-//     res.json({ message: 'message sent' })
-// })
-//
+        // Count the number of documents with the given userId
+        collectionSubs.countDocuments({userId: userId})
+            .then(count => {
+                // Check if the userId already exists
+                if (count > 0) {
+                    resolve(`User ${userId} already exists in the collection.`);
+                } else {
+                    // If the userId doesn't exist, proceed with adding the new subscriber
+                    collectionUsers.findOne({userId: userId})
+                        .then(existingUser => {
+                            if (!existingUser) {
+                                // If the user doesn't exist, create a new subscriber
+                                const newSubscriber = {
+                                    subscription: subscription, userId: userId,
+                                };
+                                collectionSubs.insertOne(newSubscriber)
+                                    .then(() => {
+                                        console.log("New subscriber added:", newSubscriber);
+                                        resolve(`New subscription added for user ${userId}: ${subscription}`);
+                                    })
+                                    .catch(error => {
+                                        console.error("Error inserting new subscriber:", error);
+                                        reject(error); // Reject the promise with the error
+                                    });
+                            } else {
+                                // If the user exists, resolve with a message
+                                resolve(`User ${userId} already exists in the collection.`);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error checking if userId exists in collection:", error);
+                            reject(error); // Reject the promise with the error
+                        });
+                }
+            })
+            .catch(error => {
+                console.error("Error counting users:", error);
+                reject(error); // Reject the promise with the error
+            });
+    });
+}
+
+
+app.post('/save-subscription/:id', async (req, res) => {
+    const userId = req.params.id;
+    await saveToDatabase(req.body, userId) //Method to save the subscription to Database
+    res.json({message: 'success'})
+})
+
+
+const vapidKeys = {
+    publicKey: process.env.PUBLICKEY, privateKey: process.env.PRIVATEKEY,
+}
+
+
+webpush.setVapidDetails('mailto:quinten.kok@hva.nl', //for testing, idk if this works
+    vapidKeys.publicKey, vapidKeys.privateKey)
+
+app.post('/send-notification', (req, res) => {
+    const dataToSend = req.body; // Assuming dataToSend is provided in the form post
+    console.log('Notification data received:', dataToSend);
+    return getSubscriptionsFromDatabase()
+        .then(function(subscriptions) {
+            let promiseChain = Promise.resolve();
+            for (let i = 0; i < subscriptions.length; i++) {
+                const subscription = subscriptions[i];
+                promiseChain = promiseChain.then(() => {
+                    return triggerPushMsg(subscription.subscription, dataToSend);
+
+                });
+            }
+            return promiseChain;
+        })
+        .then(() => {
+            res.send('Notifications sent successfully');
+        })
+        .catch(error => {
+            console.error('Error sending notifications:', error);
+            res.status(500).send('An error occurred while sending notifications');
+        });
+});
+const triggerPushMsg = function(subscription, dataToSend) {
+    return webpush.sendNotification(subscription, JSON.stringify(dataToSend))
+        .catch((err) => {
+            if (err.statusCode === 410) {
+                // return deleteSubscriptionFromDatabase(subscription._id);
+            } else {
+                console.log('Subscription is no longer valid: ', err);
+                throw err; // Re-throw the error to propagate it to the outer promise chain
+            }
+        });
+};
+
+async function getSubscriptionsFromDatabase() {
+    try {
+        const subscriptions = await collectionSubs.find({}).toArray();
+        return subscriptions;
+    } catch (error) {
+        console.error('Error retrieving subscriptions:', error);
+        throw error;
+    }
+}
+
+
+
+
+
+
 
 app.get('/events', eventsHandler);
+
 function sendEventsToAll(newChat) {
     clients.forEach(client => client.response.write(`data: ${JSON.stringify(newChat)}\n\n`))
 }
@@ -179,7 +235,7 @@ const listener = function (event) {
     if (type === 'result') {
         es.close();
     }
-};
+}
 
 es.addEventListener('open', listener);
 es.addEventListener('message', listener);
@@ -191,4 +247,6 @@ app.use('/account', loginRegisterRoute);
 
 http.listen(port, () => {
     console.log('Running on Port: ' + port);
+    // collectionSessions.deleteMany({})
+    // collectionSubs.deleteMany({})
 });

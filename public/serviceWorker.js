@@ -42,7 +42,7 @@ self.addEventListener("push", function (event) {
     event.waitUntil(handlePushEvent(event));
 });
 self.addEventListener('notificationclick', function (event) {
-    let url = '#chat-form';
+    let url = 'https://supreme-doodle-wuq9.onrender.com/#chat-form';
     event.notification.close(); // Android needs explicit close.
     event.waitUntil(
         clients.matchAll({ type: 'window' }).then(windowClients => {

@@ -42,7 +42,7 @@ self.addEventListener("push", function (event) {
     event.waitUntil(handlePushEvent(event));
 });
 self.addEventListener('notificationclick', function(event) {
-    let url = 'http://localhost:1337/#chat-form';
+    let url = '#chat-form';
     event.notification.close(); // Android needs explicit close.
     event.waitUntil(
         clients.matchAll({type: 'window'}).then( windowClients => {

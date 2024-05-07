@@ -41,11 +41,11 @@ function handlePushEvent(event) {
 self.addEventListener("push", function (event) {
     event.waitUntil(handlePushEvent(event));
 });
-self.addEventListener('notificationclick', function(event) {
+self.addEventListener('notificationclick', function (event) {
     let url = '#chat-form';
     event.notification.close(); // Android needs explicit close.
     event.waitUntil(
-        clients.matchAll({type: 'window'}).then( windowClients => {
+        clients.matchAll({ type: 'window' }).then(windowClients => {
             // Check if there is already a window/tab open with the target URL
             for (var i = 0; i < windowClients.length; i++) {
                 var client = windowClients[i];

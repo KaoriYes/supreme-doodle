@@ -1,6 +1,6 @@
 
 
-let PUBLICKEY ="BEcCxLSXfWWI0jsJ28IT9kzovSlXVIcQAHyq6PolklMpvZMwdC8AGrg3cDTPDSbrjV23kQun2uizUT-K0m7Fpbo"
+let PUBLICKEY = "BEcCxLSXfWWI0jsJ28IT9kzovSlXVIcQAHyq6PolklMpvZMwdC8AGrg3cDTPDSbrjV23kQun2uizUT-K0m7Fpbo"
 let cookie = decodeCookieValue(document.cookie);
 
 
@@ -59,7 +59,7 @@ const es = new EventSource('/events');
 
 const chatContainer = document.getElementById('chat-container');
 
-document.getElementById('chat-form').addEventListener('submit', function(event) {
+document.getElementById('chat-form').addEventListener('submit', function (event) {
     event.preventDefault(); // Prevent the default form submission
 
     // Get form values
@@ -175,11 +175,11 @@ const renderMessage = (message) => {
 
 function registerServiceWorker() {
     return navigator.serviceWorker.register('/serviceWorker.js')
-        .then(function(registration) {
+        .then(function (registration) {
             // console.log('Service worker successfully registered.');
             return registration;
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error('Unable to register service worker.', err);
         });
 }
@@ -199,8 +199,8 @@ const urlB64ToUint8Array = base64String => {
 
 
 function askPermission() {
-    return new Promise(function(resolve, reject) {
-        const permissionResult = Notification.requestPermission(function(result) {
+    return new Promise(function (resolve, reject) {
+        const permissionResult = Notification.requestPermission(function (result) {
             resolve(result);
         });
 
@@ -208,7 +208,7 @@ function askPermission() {
             permissionResult.then(resolve, reject);
         }
     })
-        .then(function(permissionResult) {
+        .then(function (permissionResult) {
             if (permissionResult !== 'granted') {
                 throw new Error('We weren\'t granted permission.');
             }
@@ -217,7 +217,7 @@ function askPermission() {
 
 function getNotificationPermissionState() {
     if (navigator.permissions) {
-        return navigator.permissions.query({name: 'notifications'})
+        return navigator.permissions.query({ name: 'notifications' })
             .then((result) => {
                 return result.state;
             });
@@ -240,7 +240,7 @@ getNotificationPermissionState().then((state) => {
 
 function subscribeUserToPush() {
     return registerServiceWorker()
-        .then(function(registration) {
+        .then(function (registration) {
             if ('pushManager' in registration) {
                 const subscribeOptions = {
                     userVisibleOnly: true,
@@ -254,7 +254,7 @@ function subscribeUserToPush() {
                 console.log('Push API not supported by this browser.');
             }
         })
-        .then(function(pushSubscription) {
+        .then(function (pushSubscription) {
             if (pushSubscription) {
                 const subscriptionObject = JSON.stringify(pushSubscription);
                 sendSubscriptionToBackEnd(subscriptionObject);

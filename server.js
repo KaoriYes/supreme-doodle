@@ -66,10 +66,10 @@ app.get('/', async (req, res) => {
     // const user = await collectionUsers.findOne({
     //     email: emailUser,
     // }); This shit is giving me a headache!!
-    res.render('index', {emailUser});
+    res.render('index', { emailUser });
 });
 
-app.get('/status', (request, response) => response.json({clients: clients.length}));
+app.get('/status', (request, response) => response.json({ clients: clients.length }));
 
 
 let clients = [];
@@ -104,14 +104,14 @@ function saveToDatabase(subscription, userId) {
     return new Promise((resolve, reject) => {
 
         // Count the number of documents with the given userId
-        collectionSubs.countDocuments({userId: userId})
+        collectionSubs.countDocuments({ userId: userId })
             .then(count => {
                 // Check if the userId already exists
                 if (count > 0) {
                     resolve(`User ${userId} already exists in the collection.`);
                 } else {
                     // If the userId doesn't exist, proceed with adding the new subscriber
-                    collectionUsers.findOne({userId: userId})
+                    collectionUsers.findOne({ userId: userId })
                         .then(existingUser => {
                             if (!existingUser) {
                                 // If the user doesn't exist, create a new subscriber
@@ -149,7 +149,7 @@ function saveToDatabase(subscription, userId) {
 app.post('/save-subscription/:id', async (req, res) => {
     const userId = req.params.id;
     await saveToDatabase(req.body, userId) //Method to save the subscription to Database
-    res.json({message: 'success'})
+    res.json({ message: 'success' })
 })
 
 
@@ -165,7 +165,7 @@ app.post('/send-notification', (req, res) => {
     const dataToSend = req.body; // Assuming dataToSend is provided in the form post
     console.log('Notification data received:', dataToSend);
     return getSubscriptionsFromDatabase()
-        .then(function(subscriptions) {
+        .then(function (subscriptions) {
             let promiseChain = Promise.resolve();
             for (let i = 0; i < subscriptions.length; i++) {
                 const subscription = subscriptions[i];
@@ -184,7 +184,7 @@ app.post('/send-notification', (req, res) => {
             res.status(500).send('An error occurred while sending notifications');
         });
 });
-const triggerPushMsg = function(subscription, dataToSend) {
+const triggerPushMsg = function (subscription, dataToSend) {
     return webpush.sendNotification(subscription, JSON.stringify(dataToSend))
         .catch((err) => {
             if (err.statusCode === 410) {

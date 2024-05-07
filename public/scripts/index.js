@@ -55,7 +55,7 @@ function decodeCookieValue(value) {
 
 
 
-const es = new EventSource('http://localhost:1337/events');
+const es = new EventSource('/events');
 
 const chatContainer = document.getElementById('chat-container');
 
@@ -76,7 +76,7 @@ document.getElementById('chat-form').addEventListener('submit', function(event) 
     };
 
     // Send the chat message to the server
-    fetch('http://localhost:1337/chat', {
+    fetch('/chat', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -88,7 +88,7 @@ document.getElementById('chat-form').addEventListener('submit', function(event) 
                 throw new Error('Network response was not ok');
             }
             // Trigger notification after chat message is successfully sent
-            return fetch('http://localhost:1337/send-notification', {
+            return fetch('/send-notification', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

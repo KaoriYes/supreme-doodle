@@ -226,7 +226,7 @@ async function addChat(request, respsonse, next) {
 }
 
 app.post('/chat', addChat);
-const es = new EventSource('http://localhost:1337/events');
+const es = new EventSource('events');
 const listener = function (event) {
     const type = event.type;
 

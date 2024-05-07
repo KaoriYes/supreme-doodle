@@ -192,7 +192,6 @@ main{
     display: flex;
     flex-direction: column;
     justify-content: start;
-    gap: 2em;
     background-color:  #ff9f3282;
     position: relative;
     }
@@ -203,6 +202,10 @@ main > div{
 main h3{
     font-size: 1rem;
     font-weight: bold;
+
+    }
+main h3:nth-of-type(2){
+    margin-bottom: 2em;
     }
 
 main #chatContainer{
@@ -210,10 +213,6 @@ main #chatContainer{
     }
 
 main #chat-form{
-    /* width: 85%; */
-    /* height: 10vh; */
-    /* bottom: 15vh; */
-    /* position: fixed; */
     display: flex;
     justify-content: start;
     flex-direction: column;
@@ -230,9 +229,12 @@ main #chat-form input{
     padding: .5em;
     margin: .5em 0;
     }
+main #chat-form input[type="text"] {
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    border: none;
+    }
 main #chat-form input[type="submit"]{
-    padding: .5em;
-    margin: .5em 0;
     background-color: var(--primary-color);
     color: var(--secondary-color);
     border: none;
